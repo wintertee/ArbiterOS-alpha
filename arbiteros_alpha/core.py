@@ -100,7 +100,8 @@ class ArbiterOSAlpha:
         non-None routing decision.
 
         Returns:
-            The target node name if routing is triggered, None otherwise.
+            A dictionary mapping checker names to their route destination.
+            A final str indicating the final route destination.
         """
         results = {}
         destination = None
