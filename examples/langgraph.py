@@ -18,7 +18,7 @@ logging.basicConfig(
 
 # 1. Setup OS
 
-os = ArbiterOSAlpha()
+os = ArbiterOSAlpha(backend="langgraph")
 
 # Policy: Prevent direct generate->toolcall without proper flow
 history_checker = HistoryPolicyChecker(
@@ -99,13 +99,18 @@ graph = builder.compile()
 
 # 3. Run graph
 
-initial_state: State = {
-    "query": "What is AI?",
-    "response": "",
-    "tool_result": "",
-    "confidence": 0.0,
-}
-for chunk in graph.stream(initial_state, stream_mode="values", debug=False):
-    logger.info(f"Current state: {chunk}\n")
 
-print_history(os.history)
+def main():
+    initial_state: State = {
+        "query": "What is AI?",
+        "response": "",
+        "tool_result": "",
+        "confidence": 0.0,
+    }
+    for chunk in graph.stream(initial_state, stream_mode="values", debug=False):
+        logger.info(f"Current state: {chunk}\n")
+
+
+if __name__ == "__main__":
+    main()
+    print_history(os.history)

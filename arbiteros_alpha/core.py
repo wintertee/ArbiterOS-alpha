@@ -8,7 +8,7 @@ import datetime
 import functools
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
 from langgraph.types import Command
 
@@ -52,15 +52,22 @@ class ArbiterOSAlpha:
         policy_routers: List of PolicyRouter instances for dynamic routing.
 
     Example:
-        >>> os = ArbiterOSAlpha()
+        >>> os = ArbiterOSAlpha(backend="langgraph")
         >>> os.add_policy_checker(HistoryPolicyChecker("require_verification",["generate", "execute"]))
         >>> os.add_policy_router(ConfidencePolicyRouter("confidence", 0.5, "retry"))
         >>> @os.instruction("generate")
         ... def generate(state): return {"result": "output"}
     """
 
-    def __init__(self):
-        """Initialize ArbiterOSAlpha with empty history and no policies."""
+    def __init__(self, backend: Literal["langgraph", "vanilla"] = "langgraph"):
+        """Initialize the ArbiterOSAlpha instance.
+
+        Args:
+            backend: The execution backend to use.
+                - "langgraph": Use an agent based on the LangGraph framework.
+                - "vanilla": Use the framework-less ('from scratch') agent implementation.
+        """
+        self.backend = backend
         self.history: list[History] = []
         self.policy_checkers: list[PolicyChecker] = []
         self.policy_routers: list[PolicyRouter] = []
@@ -77,9 +84,18 @@ class ArbiterOSAlpha:
     def add_policy_router(self, router: PolicyRouter) -> None:
         """Register a policy router for dynamic flow control.
 
+        Policy routers are only supported when using the "langgraph" backend.
+
         Args:
             router: A PolicyRouter instance to dynamically route execution.
+
+        Raises:
+            RuntimeError: If the backend is not "langgraph".
         """
+        if self.backend != "langgraph":
+            raise RuntimeError(
+                "Policy routers are only supported with the 'langgraph' backend."
+            )
         logger.debug(f"Adding policy router: {router}")
         self.policy_routers.append(router)
 
