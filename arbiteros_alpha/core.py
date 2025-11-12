@@ -47,6 +47,7 @@ class ArbiterOSAlpha:
     the underlying graph structure.
 
     Attributes:
+        backend: The execution backend in use.
         history: List of execution history entries with timestamps and I/O.
         policy_checkers: List of PolicyChecker instances for validation.
         policy_routers: List of PolicyRouter instances for dynamic routing.
