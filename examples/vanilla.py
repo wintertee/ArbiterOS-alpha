@@ -76,7 +76,7 @@ def evaluate(state: State) -> State:
 
 
 def main():
-    # 3. Run graph
+    # 3. Run instructions
 
     state: State = {
         "query": "What is AI?",
